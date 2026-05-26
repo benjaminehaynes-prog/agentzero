@@ -1,4 +1,6 @@
 import os
+from google.genai import types
+
 
 def get_files_info(working_directory: str, directory: str = ".") -> str:
     try:
@@ -21,7 +23,7 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
     except Exception as e:
         return f'Error: {e}'
 
-from google.genai import types
+
 
 schema_get_files_info = types.FunctionDeclaration(
     name="get_files_info",
