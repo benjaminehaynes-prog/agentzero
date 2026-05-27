@@ -22,22 +22,32 @@ def call_function(
         print(f"Received function call: {function_call.name} with arguments: {function_call.args}")
     else:
         print(f"Received function call: {function_call.name}")
-
-
-function_mapping: dict[str, Callable[..., str]] = {
-    "get_file_content": get_file_content,
-    "get_files_info": get_files_info,
-    "run_python_file": run_python_file,
-    "write_file": write_file
-}
-function_name = call_function.name or ""
-if function_name not in function_mapping:
+    function_mapping: dict[str, Callable[..., str]] = {
+        "get_file_content": schema_get_file_content,
+        "get_files_info": schema_get_files_info,
+        "run_python_file": schema_run_python_file,
+        "write_file": schema_write_file
+        }
+    function_name = call_function.name or ""
+    if function_name not in function_mapping:
+        return types.Content(
+            role="tool",
+            parts=[
+            types.Part.from_function_response(
+                    name=function_name,
+                    response={"error": f"Unknown function: {function_name}"},
+                )
+            ],
+        )
+    args = dict(call_function.args) if call_function.args else {}
+    args["working_directory"] = "./calculator"
+    function_result = function_mapping[function_name](**args)
     return types.Content(
         role="tool",
         parts=[
-        types.Part.from_function_response(
+            types.Part.from_function_response(
                 name=function_name,
-                response={"error": f"Unknown function: {function_name}"},
+                response={"result": function_result},
             )
         ],
     )
