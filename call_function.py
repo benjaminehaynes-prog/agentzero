@@ -16,12 +16,13 @@ available_functions = types.Tool(
 
 
 def call_function(
-        function_call: types.FunctionCall, verbose: bool = False 
+        call_function: types.FunctionCall, verbose: bool = False 
     ) -> types.Content:
     if verbose:
-        print(f"Received function call: {function_call.name} with arguments: {function_call.args}")
+        args_preview = getattr(call_function, 'args', None)
+        print(f"Calling function: {call_function.name}({call_function.args})")
     else:
-        print(f"Received function call: {function_call.name}")
+        print(f" - Calling function: {call_function.name}")
     function_mapping: dict[str, Callable[..., str]] = {
         "get_file_content": schema_get_file_content,
         "get_files_info": schema_get_files_info,
